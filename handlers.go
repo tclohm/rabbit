@@ -1,12 +1,15 @@
 package main
 
 import (
-	"log"
+	"net/http"
 	"time"
 	"encoding/json"
+	"strconv"
 
-	"models"
-	amqp "github.com/streadway/amqp"
+	"github.com/streadway/amqp"
+	"github.com/google/uuid"
+	"github.com/tclohm/rabbit/models"
+
 )
 
 type JobServer struct {
@@ -16,7 +19,7 @@ type JobServer struct {
 }
 
 func (s *JobServer) publish(jsonBody []byte) error {
-	message := ampq.Publishing{
+	message := amqp.Publishing{
 		ContentType: "application/json",
 		Body: jsonBody,
 	}
@@ -41,7 +44,7 @@ func (s *JobServer) asyncDBHandler(w http.ResponseWriter, r *http.Request) {
 
 	jsonBody, err := json.Marshal(models.Job{ID: jobID,
 		Type: "A",
-		ExtraData: models.Job{ClientTime: clientTime}
+		ExtraData: models.Log{ClientTime: clientTime},
 	})
 
 	handleError(err, "JSON body creation failed")
@@ -59,8 +62,8 @@ func (s *JobServer) asyncDBHandler(w http.ResponseWriter, r *http.Request) {
 func (s *JobServer) asyncCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	jobID, err := uuid.NewRandom()
 	queryParams := r.URL.Query()
-	unixTime, err := strconv.ParseInt(queryParams.Get("client_time"), 10, 64)
-	clientTime := time.Unix(unixTime, 0)
+	_, err = strconv.ParseInt(queryParams.Get("client_time"), 10, 64)
+	//clientTime := time.Unix(unixTime, 0)
 	handleError(err, "Error while converting client time")
 
 	jsonBody, err := json.Marshal(models.Job{ID: jobID,
@@ -79,11 +82,11 @@ func (s *JobServer) asyncCallbackHandler(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-func (s *JobServer) asyncEmailWorkHandler(w http.ResponseWriter, r *http.Request) {
+func (s *JobServer) asyncMailHandler(w http.ResponseWriter, r *http.Request) {
 	jobID, err := uuid.NewRandom()
 	queryParams := r.URL.Query()
-	unixTime, err := strconv.ParseInt(queryParams.Get("client_time"), 10, 64)
-	clientTime := time.Unix(unixTime, 0)
+	_, err = strconv.ParseInt(queryParams.Get("client_time"), 10, 64)
+	//clientTime := time.Unix(unixTime, 0)
 	handleError(err, "Error while converting client time")
 
 	jsonBody, err := json.Marshal(models.Job{ID: jobID,

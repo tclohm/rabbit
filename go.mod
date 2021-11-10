@@ -1,4 +1,4 @@
-module rabbit
+module github.com/tclohm/rabbit
 
 go 1.16
 

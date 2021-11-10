@@ -10,7 +10,7 @@ import (
 	"github.com/joho/godotenv"
 	amqp "github.com/streadway/amqp"
 	"github.com/gorilla/mux"
-	
+
 
 )
 
@@ -64,7 +64,7 @@ func main() {
 	}(jobServer.Conn)
 
 	router := mux.NewRouter()
-	router.HandleFunc("/job/database", job.Server.asyncDBHandler)
+	router.HandleFunc("/job/database", jobServer.asyncDBHandler)
 	router.HandleFunc("/job/mail", jobServer.asyncMailHandler)
 	router.HandleFunc("/job/callback", jobServer.asyncCallbackHandler)
 

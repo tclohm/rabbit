@@ -5,9 +5,8 @@ import (
 	"time"
 
 	"encoding/json"
-
-	"models"
 	"github.com/streadway/amqp"
+	"github.com/tclohm/rabbit/models"
 )
 
 type Workers struct {

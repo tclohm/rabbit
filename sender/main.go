@@ -18,7 +18,7 @@ func handleError(err error, msg string) {
 func main() {
 	err := godotenv.Load()
 	amqp_connection_string := fmt.Sprintf("%s", os.Getenv("AMQP"))
-	
+
 	conn, err := ampq.Dial(amqp_connection_string)
 	handleError(err, "Dialing failed to connect to RabbitMQ broker")
 	defer conn.Close()
@@ -29,12 +29,12 @@ func main() {
 	defer channel.Close()
 
 	testQueue, err := channel.QueueDeclare(
-		"test", // queue name
-		false, // message to be persisted
-		false, // delete message when unused
-		false, // exclusive
-		false, // no wait time
-		nil, // extra args
+		"test",
+		false,
+		false,
+		false,
+		false,
+		nil, 
 	)
 
 	handleError(err, "Queue creation failed")

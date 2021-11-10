@@ -2,10 +2,11 @@ package main
 
 import (
 	"log"
+	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
-	"github.com/streadway/amqp"
+	ampq "github.com/streadway/amqp"
 )
 
 func handleError(err error, msg string) {
@@ -20,16 +21,19 @@ func main() {
 
 	conn, err := ampq.Dial(amqp_connection_string)
 	handleError(err, "Dialing failed to connect to RabbitMQ broker")
-	defer channel.Close()
+	defer conn.Close()
+
+	channel, err := conn.Channel()
 
 	testQueue, err := channel.QueueDeclare(
-		"test",
-		false,
-		false, 
-		false,
-		false,
-		nil
+		"test", // Name of the queue
+		false, 	// Message is persisted or not
+		false, 	// Delete message when unused
+		false,	// Exclusive
+		false,	// No Waiting time
+		nil,	// Extra args
 	)
+	
 	handleError(err, "Queue creation failed")
 
 	messages, err := channel.Consume(
